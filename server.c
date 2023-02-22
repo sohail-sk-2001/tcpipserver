@@ -5,6 +5,7 @@
 #include<sys/socket.h>
 #include<arpa/inet.h>
 #include<stdbool.h>
+#include<pthread.h>
 
 #define SERVERPORT 8080
 #define BUFSIZE 100
@@ -21,7 +22,9 @@ int check(int e, const char *msg){
 	return e;
 }
 
-void handle_connection(int cli_fd){
+void* handle_connection(void* client_fd){
+	int cli_fd = *((int*)client_fd);
+	free(client_fd);
 	char buff[BUFSIZE];
 	int n;
 	while(true){
@@ -35,6 +38,7 @@ void handle_connection(int cli_fd){
 
 		if(strncmp("quit",buff,4)==0){
 			printf("Server Exit...\n");
+			close(cli_fd);
 			break;
 		}
 	}
@@ -56,13 +60,19 @@ int main(){
 	check(listen(server_socket,SERVER_BACKLOG),"Listen failed");
 	printf("Server Listening....\n");
 	len = sizeof(client_addr);
-
-	check(client_socket=accept(server_socket,(SA*)&client_addr,&len),"Server Accept Failed");
+	
+	while(true){
+		printf("Waiting for Connections...\n");
+		check(client_socket=accept(server_socket,(SA*)&client_addr,&len),"Server Accept Failed");
 	
 	printf("Server accepted the client");
 
-	handle_connection(client_socket);
+	//handle_connection(client_socket);
+	pthread_t t;
+	int *p_client = malloc(sizeof(int));
+	*p_client = client_socket;
+	pthread_create(&t,NULL,handle_connection,p_client);
+	}
 
-	close(server_socket);
 }
 
