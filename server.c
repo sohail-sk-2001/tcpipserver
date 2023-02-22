@@ -27,7 +27,7 @@ void handle_connection(int cli_fd){
 	while(true){
 		bzero(buff,BUFSIZE);
 		read(cli_fd,buff,sizeof(buff));
-		printf("From client: 5s\t To Clienmt: ", buff);
+		printf("From client: %s\n To Client: ", buff);
 		bzero(buff,BUFSIZE);
 		n=0;
 		while((buff[n++]=getchar())!='\n');
@@ -58,7 +58,7 @@ int main(){
 	len = sizeof(client_addr);
 
 	check(client_socket=accept(server_socket,(SA*)&client_addr,&len),"Server Accept Failed");
-
+	
 	printf("Server accepted the client");
 
 	handle_connection(client_socket);
