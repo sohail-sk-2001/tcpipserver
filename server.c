@@ -63,7 +63,7 @@ void* handle_connection(void* client_fd){
 		printf("From client (%s:%d): %s\n",inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port), buff);
 		if(strncmp("quit",buff,4)==0){
 			write(cli_fd,"quit",4);
-			printf("Closed Connection....\n");
+			printf("Closed Connection..(%s:%d)\n",inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port));
 			close(cli_fd);
 			break;
 		}
