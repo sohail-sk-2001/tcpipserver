@@ -23,6 +23,7 @@ int check(int e, const char *msg);
 void * thread_function(void *arg);
 void* handle_connection(void* client_fd);
 
+
 int check(int e, const char *msg){
 	if(e==-1){
 		perror(msg);
