@@ -18,6 +18,7 @@ typedef struct sockaddr SA;
 
 pthread_t thread_pool[THREAD_POOL_SIZE];
 pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t condition_var=PTHREAD_COND_INITIALIZER;
 
 int check(int e, const char *msg);
 void * thread_function(void *arg);
@@ -36,7 +37,10 @@ void * thread_function(void *arg){
 	while(true){
 		int *pclient;
 		pthread_mutex_lock(&mutex);
-		pclient = dequeue();
+		if((pclient = dequeue())==NULL){
+			pthread_cond_wait(&condition_var,&mutex);
+			pclient = dequeue();
+		}
 		pthread_mutex_unlock(&mutex);
 		if(pclient != NULL){
 			handle_connection(pclient);
@@ -52,17 +56,24 @@ void* handle_connection(void* client_fd){
 	while(true){
 		bzero(buff,BUFSIZE);
 		read(cli_fd,buff,sizeof(buff));
-		printf("From client: %s\n To Client: ", buff);
-		bzero(buff,BUFSIZE);
-		n=0;
-		while((buff[n++]=getchar())!='\n');
-		write(cli_fd,buff,sizeof(buff));
-
+		printf("From client: %s\n", buff);
 		if(strncmp("quit",buff,4)==0){
-			printf("Server Exit...\n");
+			write(cli_fd,"quit",4);
+			printf("Closed Connection....\n");
 			close(cli_fd);
 			break;
 		}
+		bzero(buff,BUFSIZE);
+		n=0;
+		printf("To Client: ");
+		while((buff[n++]=getchar())!='\n');
+		write(cli_fd,buff,sizeof(buff));
+
+		/*if(strncmp("quit",buff,4)==0){
+			printf("Server Exit...\n");
+			close(cli_fd);
+			break;
+		}*/
 	}
 }
 
@@ -99,6 +110,7 @@ int main(){
 	*p_client = client_socket;
 	pthread_mutex_lock(&mutex);
 	enqueue(p_client);
+	pthread_cond_signal(&condition_var);
 	pthread_mutex_unlock(&mutex);
 	//pthread_create(&t,NULL,handle_connection,p_client);
 	}
