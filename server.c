@@ -49,14 +49,18 @@ void * thread_function(void *arg){
 }
 
 void* handle_connection(void* client_fd){
+	struct sockaddr_in client_addr;
+	socklen_t len;
 	int cli_fd = *((int*)client_fd);
 	free(client_fd);
 	char buff[BUFSIZE];
+	len = sizeof(client_addr);
+	getpeername(cli_fd,(struct sockaddr*)&client_addr,&len);
 	int n;
 	while(true){
 		bzero(buff,BUFSIZE);
 		read(cli_fd,buff,sizeof(buff));
-		printf("From client: %s\n", buff);
+		printf("From client (%s:%d): %s\n",inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port), buff);
 		if(strncmp("quit",buff,4)==0){
 			write(cli_fd,"quit",4);
 			printf("Closed Connection....\n");
@@ -65,7 +69,7 @@ void* handle_connection(void* client_fd){
 		}
 		bzero(buff,BUFSIZE);
 		n=0;
-		printf("To Client: ");
+		printf("To Client (%s:%d): ",inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port));
 		while((buff[n++]=getchar())!='\n');
 		write(cli_fd,buff,sizeof(buff));
 
