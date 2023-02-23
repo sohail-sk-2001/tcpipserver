@@ -101,7 +101,7 @@ int main(){
 		printf("Waiting for Connections...\n");
 		check(client_socket=accept(server_socket,(SA*)&client_addr,&len),"Server Accept Failed");
 	
-	printf("Server accepted the client");
+	printf("Server accepted the client %s:%d\n",inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port));
 
 	//handle_connection(client_socket);
 	//pthread_t t;
