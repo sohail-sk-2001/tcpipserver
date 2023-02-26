@@ -25,9 +25,6 @@ int check(int e, const char *msg);
 void * thread_function(void *arg);
 void* handle_connection(void* client_fd);
 
-void sig_handler(int signum){
-	printf("Server has been closed");
-}
 
 int check(int e, const char *msg){
 	if(e==-1){
@@ -108,7 +105,6 @@ int main(){
 	while(true){
 		printf("Waiting for Connections...\n");
 		check(client_socket=accept(server_socket,(SA*)&client_addr,&len),"Server Accept Failed");
-		signal(SIGINT,sig_handler);
 	
 	printf("Server accepted the client %s:%d\n",inet_ntoa(client_addr.sin_addr),ntohs(client_addr.sin_port));
 
