@@ -34,7 +34,7 @@ void handle_connection(int cli_fd){
 		read(cli_fd,buff,BUFSIZE);
 		printf("From Server: %s",buff);
 		if((strncmp(buff,"quit",4))==0){
-			printf("Client Exit....\n");
+			printf("\nClient Exit....\n");
 			break;
 		}
 	}
@@ -51,7 +51,7 @@ int main(){
 	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
         server_addr.sin_port = htons(SERVERPORT);
 	check(connect(client_socket,(SA*)&server_addr,sizeof(server_addr)),"Failed to connect");
-	printf("Connected to server....\n");
+	printf("Connected to server....\nType quit to close the connection\n");
 
 	handle_connection(client_socket);
 

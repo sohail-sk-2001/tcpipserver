@@ -87,6 +87,7 @@ int main(){
 	int server_socket,client_socket,len;
 	SA_IN server_addr,client_addr;
 	check((server_socket = socket(AF_INET,SOCK_STREAM,0)),"Failed to create socket");
+	printf("Socket Created\n");
 	bzero(&server_addr,sizeof(server_addr));
 
 	for (int i=0;i<THREAD_POOL_SIZE;i++){
@@ -97,6 +98,7 @@ int main(){
         server_addr.sin_port = htons(SERVERPORT);
 
 	check(bind(server_socket,(SA*)&server_addr,sizeof(server_addr)),"Bind failed");
+	printf("Binded at port %d\n",server_addr.sin_port);
 	
 	check(listen(server_socket,SERVER_BACKLOG),"Listen failed");
 	printf("Server Listening....\n");
